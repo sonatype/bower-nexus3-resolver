@@ -131,6 +131,28 @@ describe('bower-nexus3-resolver', function() {
       };
       assert.deepEqual(actual, expected);
     });
+    it('should parse a nexus+http:// url containing a context path into the important components', function() {
+      var actual = resolver._parseNexusUrl('nexus+http://hostname:8080/context/repository/reponame/packagename');
+      var expected = {
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      };
+      assert.deepEqual(actual, expected);
+    });
+    it('should parse a nexus+https:// url containing a context path into the important components', function() {
+      var actual = resolver._parseNexusUrl('nexus+https://hostname:8080/context/repository/reponame/packagename');
+      var expected = {
+        protocol: 'https:',
+        hostname: 'hostname',
+        port: '8080',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      };
+      assert.deepEqual(actual, expected);
+    });
   });
 
   describe('_buildNexusVersionsEndpoint()', function() {
