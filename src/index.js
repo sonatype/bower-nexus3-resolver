@@ -73,7 +73,7 @@ module.exports = function resolver(bower) {
         protocol: parsed.protocol,
         hostname: parsed.hostname,
         port: parsed.port,
-        path: (segments.length > 3) ? '/' + segments.slice(1, segments.length - 2).join('/') : '',
+        path: '/' + segments.slice(1, segments.length - 2).join('/'),
         repositoryName: segments[segments.length - 2],
         packageName: segments[segments.length - 1]
       };
