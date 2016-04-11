@@ -73,6 +73,7 @@ module.exports = function resolver(bower) {
         protocol: parsed.protocol,
         hostname: parsed.hostname,
         port: parsed.port,
+        path: (segments.length > 3) ? '/' + segments.slice(1, segments.length - 2).join('/') : '',
         repositoryName: segments[segments.length - 2],
         packageName: segments[segments.length - 1]
       };
@@ -90,7 +91,8 @@ module.exports = function resolver(bower) {
         protocol: parsedNexusUrl.protocol,
         hostname: parsedNexusUrl.hostname,
         port: parsedNexusUrl.port,
-        pathname: '/repository/' + parsedNexusUrl.repositoryName + '/' + parsedNexusUrl.packageName + '/versions.json',
+        pathname: parsedNexusUrl.path + '/' + parsedNexusUrl.repositoryName + '/' + parsedNexusUrl.packageName +
+          '/versions.json',
         auth: this._buildAuth()
       });
     },
@@ -108,8 +110,8 @@ module.exports = function resolver(bower) {
         protocol: parsedNexusUrl.protocol,
         hostname: parsedNexusUrl.hostname,
         port: parsedNexusUrl.port,
-        pathname: '/repository/' + parsedNexusUrl.repositoryName + '/' + parsedNexusUrl.packageName + '/' + target +
-        '/package.tar.gz',
+        pathname: parsedNexusUrl.path + '/' + parsedNexusUrl.repositoryName + '/' + parsedNexusUrl.packageName + '/' +
+          target + '/package.tar.gz',
         auth: this._buildAuth()
       });
     },

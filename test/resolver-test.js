@@ -115,6 +115,7 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       };
@@ -126,6 +127,7 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'https:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       };
@@ -137,6 +139,7 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/context/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       };
@@ -148,6 +151,7 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'https:',
         hostname: 'hostname',
         port: '8080',
+        path: '/context/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       };
@@ -159,6 +163,7 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/context/path/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       };
@@ -170,6 +175,7 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'https:',
         hostname: 'hostname',
         port: '8080',
+        path: '/context/path/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       };
@@ -183,10 +189,23 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       });
       var expected = 'http://hostname:8080/repository/reponame/packagename/versions.json';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build an http:// url with context path for a specific versions endpoint in Nexus', function() {
+      var actual = resolver._buildNexusVersionsEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      });
+      var expected = 'http://hostname:8080/context/path/repository/reponame/packagename/versions.json';
       assert.deepEqual(actual, expected);
     });
     it('should build an https:// url for a specific versions endpoint in Nexus', function() {
@@ -194,10 +213,23 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'https:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       });
       var expected = 'https://hostname:8080/repository/reponame/packagename/versions.json';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build an https:// url with context path for a specific versions endpoint in Nexus', function() {
+      var actual = resolver._buildNexusVersionsEndpoint({
+        protocol: 'https:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      });
+      var expected = 'https://hostname:8080/context/path/repository/reponame/packagename/versions.json';
       assert.deepEqual(actual, expected);
     });
     it('should build a url with auth information for nexus', function() {
@@ -213,10 +245,31 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       });
       var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/versions.json';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build a url with context path with auth information for nexus', function() {
+      var resolver = resolverFactory({
+        config: {
+          nexus: {
+            username: 'user',
+            password: 'pass'
+          }
+        }
+      });
+      var actual = resolver._buildNexusVersionsEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      });
+      var expected = 'http://user:pass@hostname:8080/context/path/repository/reponame/packagename/versions.json';
       assert.deepEqual(actual, expected);
     });
   });
@@ -227,10 +280,23 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       }, '1.2.3');
       var expected = 'http://hostname:8080/repository/reponame/packagename/1.2.3/package.tar.gz';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build an http:// url with context path for a specific tar.gz archive in Nexus', function() {
+      var actual = resolver._buildNexusArchiveEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      }, '1.2.3');
+      var expected = 'http://hostname:8080/context/path/repository/reponame/packagename/1.2.3/package.tar.gz';
       assert.deepEqual(actual, expected);
     });
     it('should build an https:// url for a specific tar.gz archive in Nexus', function() {
@@ -238,10 +304,23 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'https:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       }, '1.2.3');
       var expected = 'https://hostname:8080/repository/reponame/packagename/1.2.3/package.tar.gz';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build an https:// url with context path for a specific tar.gz archive in Nexus', function() {
+      var actual = resolver._buildNexusArchiveEndpoint({
+        protocol: 'https:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      }, '1.2.3');
+      var expected = 'https://hostname:8080/context/path/repository/reponame/packagename/1.2.3/package.tar.gz';
       assert.deepEqual(actual, expected);
     });
     it('should build a url with auth information in Nexus', function() {
@@ -257,10 +336,31 @@ describe('bower-nexus3-resolver', function() {
         protocol: 'http:',
         hostname: 'hostname',
         port: '8080',
+        path: '/repository',
         repositoryName: 'reponame',
         packageName: 'packagename'
       }, '1.2.3');
       var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/1.2.3/package.tar.gz';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build a url with context path with auth information in Nexus', function() {
+      var resolver = resolverFactory({
+        config: {
+          nexus: {
+            username: 'user',
+            password: 'pass'
+          }
+        }
+      });
+      var actual = resolver._buildNexusArchiveEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      }, '1.2.3');
+      var expected = 'http://user:pass@hostname:8080/context/path/repository/reponame/packagename/1.2.3/package.tar.gz';
       assert.deepEqual(actual, expected);
     });
   });
