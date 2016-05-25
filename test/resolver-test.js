@@ -249,25 +249,25 @@ describe('bower-nexus3-resolver', function() {
         repositoryName: 'reponame',
         packageName: 'packagename'
       });
-	    it('should build a url with base64 encoded auth information for nexus', function() {
-	      var resolver = resolverFactory({
-	        config: {
-	          nexus: {
-	            auth: 'dXNlcjpwYXNz'
-	          }
-	        }
-	      });
-	      var actual = resolver._buildNexusVersionsEndpoint({
-	        protocol: 'http:',
-	        hostname: 'hostname',
-	        port: '8080',
-	        path: '/repository',
-	        repositoryName: 'reponame',
-	        packageName: 'packagename'
-	      });
-	      var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/versions.json';
-	      assert.deepEqual(actual, expected);
-	    });
+      var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/versions.json';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build a url with base64 encoded auth information for nexus', function() {
+      var resolver = resolverFactory({
+        config: {
+          nexus: {
+            auth: 'dXNlcjpwYXNz'
+          }
+        }
+      });
+      var actual = resolver._buildNexusVersionsEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      });
       var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/versions.json';
       assert.deepEqual(actual, expected);
     });
