@@ -249,6 +249,25 @@ describe('bower-nexus3-resolver', function() {
         repositoryName: 'reponame',
         packageName: 'packagename'
       });
+	    it('should build a url with base64 encoded auth information for nexus', function() {
+	      var resolver = resolverFactory({
+	        config: {
+	          nexus: {
+	            auth: 'dXNlcjpwYXNz'
+	          }
+	        }
+	      });
+	      var actual = resolver._buildNexusVersionsEndpoint({
+	        protocol: 'http:',
+	        hostname: 'hostname',
+	        port: '8080',
+	        path: '/repository',
+	        repositoryName: 'reponame',
+	        packageName: 'packagename'
+	      });
+	      var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/versions.json';
+	      assert.deepEqual(actual, expected);
+	    });
       var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/versions.json';
       assert.deepEqual(actual, expected);
     });
@@ -258,6 +277,25 @@ describe('bower-nexus3-resolver', function() {
           nexus: {
             username: 'user',
             password: 'pass'
+          }
+        }
+      });
+      var actual = resolver._buildNexusVersionsEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/context/path/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      });
+      var expected = 'http://user:pass@hostname:8080/context/path/repository/reponame/packagename/versions.json';
+      assert.deepEqual(actual, expected);
+    });
+    it('should build a url with context path with base64 encoded auth information for nexus', function() {
+      var resolver = resolverFactory({
+        config: {
+          nexus: {
+            auth: 'dXNlcjpwYXNz'
           }
         }
       });
@@ -343,6 +381,25 @@ describe('bower-nexus3-resolver', function() {
       var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/1.2.3/package.tar.gz';
       assert.deepEqual(actual, expected);
     });
+    it('should build a url with base64 encoded auth information in Nexus', function() {
+      var resolver = resolverFactory({
+        config: {
+          nexus: {
+            auth: 'dXNlcjpwYXNz'
+          }
+        }
+      });
+      var actual = resolver._buildNexusArchiveEndpoint({
+        protocol: 'http:',
+        hostname: 'hostname',
+        port: '8080',
+        path: '/repository',
+        repositoryName: 'reponame',
+        packageName: 'packagename'
+      }, '1.2.3');
+      var expected = 'http://user:pass@hostname:8080/repository/reponame/packagename/1.2.3/package.tar.gz';
+      assert.deepEqual(actual, expected);
+    });
     it('should build a url with context path with auth information in Nexus', function() {
       var resolver = resolverFactory({
         config: {
@@ -379,6 +436,18 @@ describe('bower-nexus3-resolver', function() {
       var expected = 'user:pass';
       assert.deepEqual(actual, expected);
     });
+		it('should build an auth string when base64 encoded credentials are present', function() {
+			var resolver = resolverFactory({
+				config: {
+					nexus: {
+						auth: 'dXNlcjpwYXNz'
+					}
+				}
+			});
+			var actual = resolver._buildAuth();
+			var expected = 'user:pass';
+			assert.deepEqual(actual, expected);
+		});
     it('should not build an auth string when both username and password are absent', function() {
       var actual = resolver._buildAuth();
       var expected = null;
