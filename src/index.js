@@ -124,7 +124,7 @@ module.exports = function resolver(bower) {
      */
     _buildAuth: function() {
 			if (bower.config.nexus && bower.config.nexus.auth) {
-				return new Buffer(bower.config.nexus.auth, 'base64').toString(); //.toString("ascii");
+				return new Buffer(bower.config.nexus.auth, 'base64').toString();
 			}
       if (bower.config.nexus && bower.config.nexus.username && bower.config.nexus.password) {
         return bower.config.nexus.username + ':' + bower.config.nexus.password;
