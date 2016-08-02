@@ -272,7 +272,6 @@ module.exports = function resolver(bower) {
       return {
         url: url,
         encoding: encoding,
-        proxy: url.indexOf('https://') < 0 ? bower.config.httpsProxy : bower.config.proxy,
         strictSSL: bower.config.strictSsl,
         ca: bower.config.ca ? bower.config.ca.default : null,
         timeout: bower.config.timeout
