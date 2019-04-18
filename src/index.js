@@ -252,7 +252,7 @@ module.exports = function resolver(bower) {
           reject(err);
         });
 
-        var tarStream = tar.extract({path: tempDir.name});
+        var tarStream = tar.extract({cwd: tempDir.name});
         tarStream.on('error', function(err) {
           reject(err);
         });
