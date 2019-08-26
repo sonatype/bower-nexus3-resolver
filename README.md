@@ -15,7 +15,7 @@ Eclipse Foundation. All other trademarks are the property of their respective ow
 
 # bower-nexus3-resolver
 
-An NPM package for integrating the Nexus 3 Repository Manager with Bower (<https://bower.herokuapp.com>). 
+An NPM package for integrating the Nexus 3 Repository Manager with Bower (<https://bower.io>). 
 
 ## Building the package from source
 
