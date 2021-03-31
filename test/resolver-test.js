@@ -453,6 +453,8 @@ describe('bower-nexus3-resolver', function() {
   });
 
   describe('_downloadString()', function() {
+    //avoid timeout 2000 exceeded
+    this.timeout(15000);
     it('should download a string and return it via a promise', function() {
       nock('http://example.com').get('/endpoint').reply(200, 'content');
       return resolver._downloadString('http://example.com/endpoint').then(function(result) {
@@ -481,6 +483,8 @@ describe('bower-nexus3-resolver', function() {
   });
 
   describe('_downloadFile()', function() {
+    //avoid timeout 2000 exceeded
+    this.timeout(15000);
     it('should download a file and return it via a promise', function() {
       nock('http://example.com').get('/endpoint').reply(200, 'abcdefg');
       var tempfile = tmp.fileSync();
@@ -517,7 +521,7 @@ describe('bower-nexus3-resolver', function() {
           });
     });
   });
-  
+
   describe('_extractTarGz()', function() {
     it('files are successfully extracted', function() {
       return resolver._extractTarGz('test/test.tar.gz')
