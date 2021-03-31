@@ -15,7 +15,8 @@ var NEXUS_REGEX = /^nexus\+/;
 
 var fs = require('fs');
 var path = require('path');
-var request = require('request');
+var axios = require('axios');
+var https = require('https');
 var Q = require('q');
 var tar = require('tar');
 var tmp = require('tmp');
@@ -25,7 +26,21 @@ var zlib = require('zlib');
 tmp.setGracefulCleanup();
 
 module.exports = function resolver(bower) {
-
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: bower.config.strictSsl,
+    ca: bower.config.ca ? bower.config.ca.default : undefined
+  });
+  const STREAM_CONFIG = {
+    timeout: bower.config.timeout,
+    httpsAgent,
+    responseType: 'stream'
+  };
+  const STRING_CONFIG = {
+    timeout: bower.config.timeout,
+    httpsAgent,
+    responseType: 'text',
+    // transformResponse: [] //prevent automatic json parsing
+  };
   return {
 
     match: function(source) {
@@ -41,7 +56,7 @@ module.exports = function resolver(bower) {
       var parsed = self._parseNexusUrl(source);
       var refsUrl = self._buildNexusVersionsEndpoint(parsed);
       return self._downloadString(refsUrl).then(function(data) {
-        return self._parseVersions(data);
+        return self._processVersions(data);
       });
     },
 
@@ -137,12 +152,12 @@ module.exports = function resolver(bower) {
     /**
      * Extracts the version information from a Nexus versions endpoint response.
      *
-     * @param {String} data The stringified JSON array containing version numbers as strings.
+     * @param {object} data The JSON array containing version numbers as strings.
      * @returns {Array} The array containing the extracted target and version information.
      * @private
      */
-    _parseVersions: function(data) {
-      return JSON.parse(data).map(function(entry) {
+    _processVersions: function(data) {
+      return data.map(function(entry) {
         return {
           target: entry,
           version: entry
@@ -184,20 +199,19 @@ module.exports = function resolver(bower) {
      * @private
      */
     _downloadFile: function(url, filename) {
-      var self = this;
+      console.log(filename);
       return Q.Promise(function(resolve, reject) {
-        request(self._buildRequestConfig(url, null))
-            .on('error', function(error) {
-              reject(error);
-            })
-            .on('response', function(response) {
-              if (response.statusCode !== 200) {
-                reject(new Error(url + ' (HTTP ' + response.statusCode + ')'));
-              }
-            })
-            .pipe(fs.createWriteStream(filename)).on('finish', function() {
-              resolve(filename);
-            });
+        axios.get(url, STREAM_CONFIG).then(response => {
+          response.data.pipe(fs.createWriteStream(filename)).on('finish', function() {
+            resolve(filename);
+          });
+        }).catch(error => {
+          if (error.response){
+            reject(new Error(url + ' (HTTP ' + error.response.status + ')'));
+          } else {
+            reject(error);
+          }
+        });
       });
     },
 
@@ -209,20 +223,15 @@ module.exports = function resolver(bower) {
      * @private
      */
     _downloadString: function(url) {
-      var self = this;
       return Q.Promise(function(resolve, reject) {
-        request(self._buildRequestConfig(url, 'utf-8'), function(error, response, body) {
-          if (error) {
+        axios.get(url, STRING_CONFIG).then(response => {
+          resolve(response.data);
+        }).catch(error => {
+          if (error.response) {
+            reject(new Error(url + ' (HTTP ' + error.response.status + ')'));
+          } else {
             reject(error);
           }
-          else if (response.statusCode !== 200) {
-            reject(new Error(url + ' (HTTP ' + response.statusCode + ')'));
-          }
-          else {
-            resolve(body);
-          }
-        }).on('error', function(error) {
-          reject(error);
         });
       });
     },
@@ -252,7 +261,7 @@ module.exports = function resolver(bower) {
           reject(err);
         });
 
-        var tarStream = tar.extract({path: tempDir.name});
+        var tarStream = tar.extract({cwd: tempDir.name});
         tarStream.on('error', function(err) {
           reject(err);
         });
@@ -264,23 +273,5 @@ module.exports = function resolver(bower) {
         readStream.pipe(zlibStream).pipe(tarStream);
       });
     },
-
-    /**
-     * Builds a request configuration for a particular url and the provided Bower configuration.
-     *
-     * @param {String} url The url to access.
-     * @param {String} encoding The encoding (null for binary downloads)
-     * @return {Object} The configuration including Bower settings.
-     * @private
-     */
-    _buildRequestConfig: function(url, encoding) {
-      return {
-        url: url,
-        encoding: encoding,
-        strictSSL: bower.config.strictSsl,
-        ca: bower.config.ca ? bower.config.ca.default : null,
-        timeout: bower.config.timeout
-      }
-    }
   }
 };
